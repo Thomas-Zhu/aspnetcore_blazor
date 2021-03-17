@@ -1,0 +1,81 @@
+﻿@page "/book"
+@using BlazorBook.Data
+<h3>Book</h3>
+@if (books == null)
+{
+    <p><em>Loading....</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>标题</th>
+                <th>出版日期</th>
+                <th>作者</th>
+                <th>价格</th>
+                <th>类型</th>
+                <th>操作</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var book in books)
+            {
+                <tr>
+                    <td>@book.Title</td>
+                    <td>@book.PublictionDate.ToShortDateString()</td>
+                    <td>@book.Author</td>
+                    <td>@book.Price</td>
+                    <td>@book.Type</td>
+                    <td>
+                        <button @onclick="()=> {
+                                              EditBook(book.Title);
+                                          }">
+                            编辑
+                        </button>
+                        <button @onclick="()=>
+                                          {
+                                              DeleteBook(book.Title);
+                                          }">
+                            删除
+                        </button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+<input class="form-control" placeholder="标题" @bind="bookInfo.Title" required />
+<input class="form-control" placeholder="出版日期" @bind="bookInfo.PublictionDate" />
+<input class="form-control" placeholder="作者" @bind="bookInfo.Author" />
+<input class="form-control" placeholder="价格" @bind="bookInfo.Price" />
+<input class="form-control" placeholder="类型" @bind="bookInfo.Type" />
+<button class="btn btn-primary" @onclick="AddBook">@btnName</button>
+@code {
+    private List<BookInfo> books = new List<BookInfo>();
+    private BookInfo bookInfo = new BookInfo();
+    private string btnName = "添加";
+    private bool isEdit = false;
+    private void AddBook()
+    {
+        if (!isEdit)
+        {
+            books.Add(bookInfo);
+        }
+        btnName = "添加";
+        isEdit = false;
+        bookInfo = new BookInfo();
+    }
+    private void EditBook(string title)
+    {
+        bookInfo = books.Find(x => x.Title == title);
+        btnName = "编辑";
+        isEdit = true;
+    }
+    private void DeleteBook(string title)
+    {
+        bookInfo = books.Find(x => x.Title == title);
+        books.Remove(bookInfo);
+        bookInfo = new BookInfo();
+    }
+}
